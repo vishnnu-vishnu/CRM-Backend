@@ -18,9 +18,10 @@ from sqlalchemy import select
 
 from app.core.config import settings
 from app.db.session import init_db, AsyncSessionLocal
+from app.models.permission import Permission
 
 from app.routes import (
-    user
+    user,auth,
 )
 
 # from app.middleware.auth_middleware import (
@@ -154,6 +155,43 @@ DEFAULT_PERMISSIONS = [
     ("notifications", "view", "View notifications"),
 ]
 
+
+#seed permissions
+
+async def seed_permissions():
+
+    async with AsyncSessionLocal() as db:
+
+        for module, action, description in DEFAULT_PERMISSIONS:
+
+            permission_code = f"{module}:{action}"
+
+            result = await db.execute(
+                select(Permission).where(
+                    Permission.code == permission_code
+                )
+            )
+
+            existing_permission = result.scalar_one_or_none()
+
+            if not existing_permission:
+
+                permission = Permission(
+
+                    module=module,
+
+                    action=action,
+
+                    code=permission_code,
+
+                    description=description,
+                )
+
+                db.add(permission)
+
+        await db.commit()
+
+        logger.info("Default permissions seeded")
 
 # seed roles
 
@@ -316,6 +354,7 @@ async def lifespan(app: FastAPI):
     await seed_roles()
     await seed_departments()
     await seed_admin_user()
+    await seed_permissions()
 
     yield
 
@@ -467,6 +506,10 @@ app.include_router(
     user.router,
     prefix=API_PREFIX,
 )
+app.include_router(
+    auth.router,
+    prefix=API_PREFIX,
+)   
 
 
 

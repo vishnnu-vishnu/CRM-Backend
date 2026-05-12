@@ -23,6 +23,8 @@ from app.models.daily_report import DailyReport
 from app.models.feedback import Feedback
 from app.models.status_log import StatusLog
 from app.models.notification import Notification
+from app.models.permission import Permission
+from app.models.role_permission import RolePermission
 
 config = context.config
 
