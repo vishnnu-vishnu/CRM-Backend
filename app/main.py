@@ -21,10 +21,10 @@ from app.db.session import init_db, AsyncSessionLocal
 from app.models.permission import Permission
 
 from app.routes import (
-    user,auth,
+    user,auth,role,department,permission
 )
 
-# from app.middleware.auth_middleware import (
+# from app.middleware.auth_middleware import (   
 #     RequestLoggingMiddleware,
 #     SecurityHeadersMiddleware,
 # )
@@ -510,7 +510,18 @@ app.include_router(
     auth.router,
     prefix=API_PREFIX,
 )   
-
+app.include_router(
+    role.router,
+    prefix=API_PREFIX,
+)
+app.include_router(
+    department.router,
+    prefix=API_PREFIX,
+)
+app.include_router(
+    permission.router,
+    prefix=API_PREFIX,
+)
 
 
 
